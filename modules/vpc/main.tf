@@ -1,3 +1,5 @@
+#This is the main VPC
+
 resource "aws_vpc" "main_vpc" {
     cidr_block = var.vpc_cidr
     enable_dns_support = true
@@ -9,12 +11,14 @@ resource "aws_vpc" "main_vpc" {
   
 }
 
+#These are the availability Zones
 data "aws_availability_zones" "available" {
   state="available"
   
 }
 
-resource "aws_subnet" "public" {
+#These are the public subnets 
+resource "aws_subnet" "public_subnets" {
   count=2
    vpc_id = aws_vpc.main_vpc.id
    cidr_block = var.public_subnets[count.index]
@@ -27,6 +31,7 @@ resource "aws_subnet" "public" {
   
 }
 
+#These are private subnets 
 
 resource "aws_subnet" "private_subnets" {
 
@@ -40,4 +45,62 @@ resource "aws_subnet" "private_subnets" {
     Name="${var.project_name}-${var.environment}-private-${count.index+1}"
   }
   
+}
+
+
+#this is the internet gateway 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main_vpc.id  #attached vpc to the internet gateway
+
+  tags = {
+    Name="${var.project_name}-${var.environment}-igw"  #name of the internet gateway
+  }
+  
+}
+
+#Public Route table 
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  tags = {
+    Name="${var.project_name}-${var.environment}-public_rt"
+  }
+  
+}
+
+resource "aws_route" "public_internet" {
+  route_table_id = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.igw.id
+  
+}
+
+
+resource "aws_route_table_association" "public" {
+
+  count=2
+
+  subnet_id = aws_subnet.public_subnets[count.index].id
+  route_table_id = aws_route_table.public.id
+  
+}
+
+
+#private route table
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  tags = {
+    Name="${var.project_name}-${var.environment}-private_rt"
+  }
+  
+}
+
+resource "aws_route_table_association" "private" {
+  count=2
+
+  subnet_id = aws_subnet.private_subnets[count.index].id 
+  route_table_id = aws_route_table.private.id  
 }

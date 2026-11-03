@@ -35,3 +35,10 @@ variable "instance_type" {
   
 }
 
+variable "allowed_http_cidr" {
+  type = string
+  default = "0.0.0.0/0"
+  description = "This is the http cidr"
+  
+}
+

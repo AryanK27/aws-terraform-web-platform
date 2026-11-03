@@ -12,7 +12,7 @@ output "vpc_cidr" {
 
 
 output "public_subnet" {
-    value = aws_subnet.public[*].id
+    value = aws_subnet.public_subnets[*].id
   
 }
 
