@@ -24,10 +24,29 @@ module "compute" {
   user_data = templatefile("../../modules/compute/user_data.sh", {
     index_html = file("../../app/index.html")
   })
-
+instance_profile_name = module.iam.instance_profile_name
 
 }
 
 
 
+#This is for IAM ROle attaching to the EC2
 
+module "iam" {
+  source = "../../modules/iam"
+
+  aws_role_name = "${var.project_name}-${var.environment}-ec2-role"
+  bucket_arn = module.s3.bucket_arn
+
+  
+}
+
+
+
+module "s3" {
+
+  source = "../../modules/s3"
+
+  bucket_name = "${replace(var.project_name, "_", "-")}-${var.environment}-app-bucket-2533543"
+  
+}

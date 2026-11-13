@@ -41,3 +41,9 @@ variable "allowed_http_cidr" {
   description = "This is the http cidr"
 
 }
+
+
+variable "aws_role_name" {
+    default = "rolenewforec2"
+  
+}

@@ -1,6 +1,7 @@
 resource "aws_instance" "web"{
     instance_type=var.instance_type
     ami="ami-0f19324397f53458f"
+    iam_instance_profile = var.instance_profile_name
      vpc_security_group_ids = [var.security_group_id]
 
     subnet_id = var.subnet_id
