@@ -15,7 +15,7 @@ variable "aws_tags_for_role" {
 
 variable "s3_object_prefix" {
     type = string
-    default = "app/"
+    default = "test/"
   
 }
 
